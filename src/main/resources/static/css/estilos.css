@@ -1,6 +1,6 @@
-body{
+body {
     background-color: #ebdef0;
-    font-family: serif;
+    font-family: 'Quicksand', sans-serif;
 }
 
 header{
@@ -51,9 +51,9 @@ nav {
 }
 
 .logo {
-    font-size: 32px;
-    font-weight: bold;
-    font-family: cursive;
+    font-size: 40px;
+    font-weight: bolder;
+    font-family: "Great Vibes", cursive;
     line-height: 90px;
 }
 
@@ -75,7 +75,7 @@ nav {
 }
 
 nav ul li a:hover {
-    background-color: #5b2c6f;    
+    background-color: #5b2c6f;
 }
 
 nav ul li a {
