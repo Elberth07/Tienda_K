@@ -1,35 +1,13 @@
 <!DOCTYPE html>
-
-<html>
-    <head>
-
-        <title>TechShop</title>
-        <meta charset="UTF-8"/>
-        <link href="/css/estilos.css" rel="stylesheet" type="text/css"/>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+    <head th:replace="~{layout/plantilla :: head}">
+        <title>TechShopito</title>
     </head>
     <body>
-        <header>
-            <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
-            <nav>
-                <a class="logo nav-link" href="/">TechShop</a>
-                <ul class="nav-menu">
-                    <li class="nav-menu-item"><a class="nav-link" href="/ejemplo2">Álbumes</a></li>
-                    <li class="nav-menu-item"><a class="nav-link" href="/multimedia">Multimedia</a></li>
-                    <li class="nav-menu-item"><a class="nav-link" href="/iframe">iFrame</a></li>
-                </ul>
-            </nav>
-        </header>
-        <!-- color de barra #a569bd -->
-        <aside>
-            <h1>TechShop</h1>
-            <p>Uso de etiquetas semanticas en la pagina principal y menu de acceso rapido</p>
-        </aside>
-        <section>
-            <h2>Su tienda en linea</h2> 
-            <p>Creada en 2018 para la conveniencia de la poblacion mundial </p> 
-            <h3>Es el sitio</h3>
-        </section>
-        <footer>TechShop2025 &COPY;Todos los derechos son reservados
-        </footer>
+        <header th:replace="~{layout/plantilla :: header}"/>
+
+        <footer th:replace="~{layout/plantilla :: footer}"/>
     </body>
 </html>
