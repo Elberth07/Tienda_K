@@ -104,7 +104,7 @@
                     </compilerArgs>
                     <annotationProcessorPaths>
                         <path>
-                            <groupId>org.lombok</groupId>
+                            <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
                             <version>1.18.38</version>
                         </path>
