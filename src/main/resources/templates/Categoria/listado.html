@@ -1,16 +1,28 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
+<!--Mi primera página-->
+<html xmlns ="http://www.w3.org/1999/xhtml"
+
       xmlns:th="http://www.thymeleaf.org"
+
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
     <head th:replace="~{layout/plantilla :: head}">
-        <title>TechShopito</title>
+        <title>TechShop</title>
+        <meta charset="UTF-8"/>
+
     </head>
     <body>
-        <header th:replace="~{layout/plantilla :: header}"/>
 
-        <section th:replace="~{categoria/fragmentos :: agregarCategoria}"/>
-        <section th:replace="~{categoria/fragmentos :: listado}"/>
+        <header  <head th:replace="~{layout/plantilla :: header}"/>
 
-        <footer th:replace="~{layout/plantilla :: footer}"/>
+            <section th:replace="~{categoria/fragmentos :: agregarCategoria}"/>
+            <section th:replace="~{categoria/fragmentos :: listado}"/>
+            <section th:replace="~{categoria/fragmentos :: confirmarEliminar}"/>
+            <section th:replace="~{latout/plantilla :: mostrarToast}"/>
+
+
+
+            <footer th:replace="~{layout/plantilla :: footer}"/>
+
+
     </body>
 </html>
