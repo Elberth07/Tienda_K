@@ -1,7 +1,7 @@
 package com.tienda.controller;
 
-import com.tienda.domain.Categoria;
-import com.tienda.service.CategoriaService;
+import com.tienda.domain.Producto;
+import com.tienda.service.ProductoService;
 import com.tienda.service.FirebaseStorageService;
 import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,20 +16,20 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping("/categoria")
-public class CategoriaController {
+@RequestMapping("/producto")
+public class ProductoController {
 
     @Autowired
-    private CategoriaService categoriaService;
+    private ProductoService productoService;
 
     @GetMapping("/listado")
     public String listado(Model model) {
-        var lista = categoriaService.getCategorias(false);
+        var lista = productoService.getProductos(false);
 
-        model.addAttribute("categorias", lista);
-        model.addAttribute("totalCategorias", lista.size());
+        model.addAttribute("productos", lista);
+        model.addAttribute("totalProductos", lista.size());
 
-        return "/categoria/listado";
+        return "/producto/listado";
     }
 
     @Autowired
@@ -38,48 +38,48 @@ public class CategoriaController {
     private MessageSource messageSource;
 
     @PostMapping("/guardar")
-    public String guardar(Categoria categoria,
+    public String guardar(Producto producto,
             @RequestParam("imagenFile") MultipartFile imagenFile,
             RedirectAttributes redirectAttributes) {
 
         if (!imagenFile.isEmpty()) {
-            categoriaService.save(categoria);
+            productoService.save(producto);
             String rutaImagen = firebaseStorageService.cargaImagen(imagenFile,
-                    "categoria", categoria.getIdCategoria());
-            categoria.setRutaImagen(rutaImagen);
+                    "producto", producto.getIdProducto());
+            producto.setRutaImagen(rutaImagen);
         }
-        categoriaService.save(categoria);
+        productoService.save(producto);
 
         redirectAttributes.addFlashAttribute("todoOk",
                 messageSource.getMessage("mensaje.actualizado", null,
                         Locale.getDefault()));
 
-        return "redirect:/categoria/listado";
+        return "redirect:/producto/listado";
     }
 
     @PostMapping("/eliminar")
-    public String eliminar(Categoria categoria,
+    public String eliminar(Producto producto,
             RedirectAttributes redirectAttrs) {
-        categoria = categoriaService.getCategoria(categoria);
+        producto = productoService.getProducto(producto);
 
-        if (categoria == null) {
-            redirectAttrs.addFlashAttribute("error", messageSource.getMessage("categoria.error01", null, Locale.getDefault()));
+        if (producto == null) {
+            redirectAttrs.addFlashAttribute("error", messageSource.getMessage("producto.error01", null, Locale.getDefault()));
         } else if (false) {
-            redirectAttrs.addFlashAttribute("error", messageSource.getMessage("categoria.error02", null, Locale.getDefault()));
-        } else if (categoriaService.delete(categoria)) {
+            redirectAttrs.addFlashAttribute("error", messageSource.getMessage("producto.error02", null, Locale.getDefault()));
+        } else if (productoService.delete(producto)) {
             redirectAttrs.addFlashAttribute("todoOk", messageSource.getMessage("mensaje.eliminado", null, Locale.getDefault()));
         } else {
-            redirectAttrs.addFlashAttribute("error", messageSource.getMessage("categoria.error03", null, Locale.getDefault()));
+            redirectAttrs.addFlashAttribute("error", messageSource.getMessage("producto.error03", null, Locale.getDefault()));
         }
-        return "redirect:/categoria/listado";
+        return "redirect:/producto/listado";
 
-        /* va en lugar del false... categoria.getProductos() != null && !categoria.getProductos().isEmpty()*/
+        /* va en lugar del false... producto.getProductos() != null && !producto.getProductos().isEmpty()*/
     }
 
     @PostMapping("/modificar")
-    public String modificar(Categoria categoria, Model model) {
-        categoria = categoriaService.getCategoria(categoria);
-        model.addAttribute("categoria", categoria);
-        return "/categoria/modifica";
+    public String modificar(Producto producto, Model model) {
+        producto = productoService.getProducto(producto);
+        model.addAttribute("producto", producto);
+        return "/producto/modifica";
     }
 }
