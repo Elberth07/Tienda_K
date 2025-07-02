@@ -97,7 +97,7 @@
                                             <td><img th:src="@{${c.rutaImagen}}" alt=".." height="75"/></td>
                                             <td th:text="${c.activo} ? 'Activa':'Inactiva'"></td>
                                             <td>
-                                                     <div class="d-flex align-items-start">                                                    
+                                                <div class="d-flex align-items-start">                                                    
                                                     <button type="button"
                                                             class="btn btn-danger"
                                                             data-bs-toggle="modal"
@@ -163,13 +163,6 @@
                                         <i class="fas fa-arrow-left"></i> [[#{accion.regresar}]]
                                     </a>
                                 </div>
-                                <div class="col-md-4 d-grid">                                
-                                    <a th:href="@{/categoria/eliminar/}+${categoria.idCategoria}"
-
-                                       class="btn btn-danger">
-                                        <i class="fas fa-trash"></i> [[#{accion.eliminar}]]
-                                    </a>
-                                </div>
                                 <div class="col-md-4 d-grid">
                                     <button type="submit" class="btn btn-success">
                                         <i class="fas fa-check"></i> [[#{accion.guardar}]]
@@ -221,9 +214,9 @@
                     </form>
                 </div>
             </div>
-                
+
         </section>
-                        <section th:fragment="confirmarEliminar">
+        <section th:fragment="confirmarEliminar">
             <div class="modal fade" 
                  id="confirmModal" 
                  tabindex="-1" 
