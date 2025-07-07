@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/pruebas")
 public class PruebasController {
-
     @Autowired
     private ProductoService productoService;
     @Autowired
@@ -26,10 +25,8 @@ public class PruebasController {
     public String listado(Model model) {
         var lista = productoService.getProductos(false);
         model.addAttribute("productos", lista);
-
         var categorias = categoriaService.getCategorias(true);
         model.addAttribute("categorias", categorias);
-
         return "/pruebas/listado";
     }
 

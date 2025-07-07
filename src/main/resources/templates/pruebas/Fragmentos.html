@@ -18,25 +18,33 @@
         </section>
         <section th:fragment="tarjetas">
             <div class="row row-cols-4 mt-10">
-                <div class="card" th:each="p :${productos}">
+                <div class="card" th:each="p : ${productos}">
                     <figure>
-                        <div class="card" th:each="p : ${productos}">
-                            <img th:src="${p.rutaImagen}" alt="..." height="200"/>   
+                        <div class="d-flex justify-content-center">
+                            <img th:src="${p.rutaImagen}" alt=". . ." height="200"/>   
                         </div>
-                        <findcaption class="d-flex justify-content-evenly">
+                        <figcaption class="d-flex justify-content-evenly">
                             <span>¢[$[p.precio]]</span>
                             <span>¢[$[p.existencias]]</span>
                             <form>
-                                <input type="hidden" name="idProducto" th:value="${p.producto}"/>
+                                <input type="hidden" name="idProducto" th:value="${p.idProducto}"/>
                                 <input type="hidden" name="existencias" th:value="${p.existencias}"/>
                                 <button type="button" onclick="addCart(this.form)" class="btn btn-ligth">
                                     <i class="fas fa-cart-arrow-down"></i>
                                 </button>
                             </form>
-                        </findcaption>
+                        </figcaption>
+                    </figure>
+                    <div class="card-header"> 
+                        <h5>[[${p.descripcion}]]</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>[ [${p.detalle}]]</p>
+                    </div>
                     </figure>
                 </div>
             </div>
+
         </section>
     </body>
 </html>
