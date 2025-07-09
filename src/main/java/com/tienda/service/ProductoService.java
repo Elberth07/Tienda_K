@@ -21,6 +21,7 @@ public class ProductoService {
         }
         return lista;
     }
+
     @Transactional(readOnly = true)
     public Producto getProducto(Producto Producto) {
         return productoRepository.findById(Producto.getIdProducto()).orElse(null);
@@ -34,8 +35,25 @@ public class ProductoService {
     @Transactional
     public boolean delete(Producto producto) {
         try {
-             productoRepository.delete(producto);
+            productoRepository.delete(producto);
         } catch (Exception e) {
-        } return false;
+        }
+        return false;
     }
+
+    @Transactional(readOnly = true)
+    public List<Producto> consultaAmpliada(double precioInf, double precioSup) {
+        return productoRepository.findByPrecioBetweenOrderByPrecio(precioInf, precioSup);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Producto> consultaJPQL(double precioInf, double precioSup) {
+        return productoRepository.consultaJPQL(precioInf, precioSup);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Producto> consultaSQL(double precioInf, double precioSup) {
+        return productoRepository.consultaSQL(precioInf, precioSup);
+    }
+
 }

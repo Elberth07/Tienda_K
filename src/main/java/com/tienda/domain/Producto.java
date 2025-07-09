@@ -2,6 +2,7 @@ package com.tienda.domain;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
+
 import lombok.Data;
 
 @Data
@@ -14,7 +15,7 @@ public class Producto implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idProducto;
-   // private Long idCategoria;
+    // private Long idCategoria;
     private String descripcion;
     private double precio;
     private int existencias;

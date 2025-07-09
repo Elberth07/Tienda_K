@@ -1,6 +1,6 @@
 package com.tienda.controller;
 
-
+import com.tienda.domain.Categoria;
 import com.tienda.service.CategoriaService;
 import com.tienda.service.ProductoService;
 
@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 
-
 @Controller
 @RequestMapping("/pruebas")
 public class PruebasController {
+
     @Autowired
     private ProductoService productoService;
     @Autowired
@@ -29,5 +29,41 @@ public class PruebasController {
         model.addAttribute("categorias", categorias);
         return "/pruebas/listado";
     }
+
+    @GetMapping("/listado/{idCategoria}")
+    public String listado(Categoria categoria, Model model) {
+        categoria = categoriaService.getCategoria(categoria);
+        var lista = categoria.getProductos();
+        model.addAttribute("productos", lista);
+        var categorias = categoriaService.getCategorias(true);
+        model.addAttribute("categorias", categorias);
+        return "/pruebas/listado";
+    }
+    @GetMapping("/listado2")
+    public String listado2(Model model) {
+        var lista = productoService.getProductos(false);
+        model.addAttribute("productos", lista);
+        return "/pruebas/listado2";
+    }
+    @PostMapping("/query1")
+    public String consulta1(@RequestParam() double precioInf, 
+            @RequestParam() double precioSup, Model model ) {
+        var lista = productoService.consultaAmpliada(precioSup, precioInf);
+        model.addAttribute("productos", lista);
+        model.addAttribute("productos", precioSup);
+        model.addAttribute("productos", precioInf);
+        return "/pruebas/listado2";
+    }
+    @PostMapping("/query1")
+    public String consulta1(@RequestParam() double precioInf, 
+            @RequestParam() double precioSup, Model model ) {
+        var lista = productoService.consultaAmpliada(precioSup, precioInf);
+        model.addAttribute("productos", lista);
+        model.addAttribute("productos", precioSup);
+        model.addAttribute("productos", precioInf);
+        return "/pruebas/listado2";
+    }
+    
+    
 
 }
