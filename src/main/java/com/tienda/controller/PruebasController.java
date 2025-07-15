@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/pruebas")
@@ -54,10 +56,19 @@ public class PruebasController {
         model.addAttribute("productos", precioInf);
         return "/pruebas/listado2";
     }
-    @PostMapping("/query1")
-    public String consulta1(@RequestParam() double precioInf, 
+    @PostMapping("/query2")
+    public String consulta2(@RequestParam() double precioInf, 
             @RequestParam() double precioSup, Model model ) {
-        var lista = productoService.consultaAmpliada(precioSup, precioInf);
+        var lista = productoService.consultaJPQL(precioSup, precioInf);
+        model.addAttribute("productos", lista);
+        model.addAttribute("productos", precioSup);
+        model.addAttribute("productos", precioInf);
+        return "/pruebas/listado2";
+    }
+    @PostMapping("/query3")
+    public String consulta3(@RequestParam() double precioInf, 
+            @RequestParam() double precioSup, Model model ) {
+        var lista = productoService.consultaSQL(precioSup, precioInf);
         model.addAttribute("productos", lista);
         model.addAttribute("productos", precioSup);
         model.addAttribute("productos", precioInf);
