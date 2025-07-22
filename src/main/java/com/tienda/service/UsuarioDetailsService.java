@@ -15,8 +15,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service("userDetailsService")
-public class UsuarioDetailsService implements UserDetailsService{
-    
+public class UsuarioDetailsService implements UserDetailsService {
+
     @Autowired
     private UsuarioRepository usuarioRepository;
     @Autowired
@@ -25,22 +25,19 @@ public class UsuarioDetailsService implements UserDetailsService{
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Usuario usuario = usuarioRepository.findByUsername(username);
-        if(usuario==null) {
+        if (usuario == null) {
             throw new UsernameNotFoundException(username);
         }
-        
+
         session.removeAttribute("imagenUsuario");
-        session.setAttribute("imagenUsuario",usuario.getRutaImagen());
-        
-        var roles=new ArrayList<GrantedAuthority>();
-        
-        for(Rol rol: usuario.getRoles()){
-            roles.add(new SimpleGrantedAuthority("ROLE_"+rol.getNombre()));
+        session.setAttribute("imagenUsuario", usuario.getRutaImagen());
+
+        var roles = new ArrayList<GrantedAuthority>();
+
+        for (Rol rol : usuario.getRoles()) {
+            roles.add(new SimpleGrantedAuthority("ROLE_" + rol.getNombre()));
         }
-        
-        
+
         return new User(usuario.getUsername(), usuario.getPassword(), roles);
     }
-    }
-
-
+}
