@@ -1,9 +1,20 @@
-function  muestraImagen(input){
-    if(input.files && input.files[0]){
+function addCart(formulario) {
+    var idProducto = formula.elements[0].value;
+    var idProducto = formula.elements[1].value;
+    if (existencias > 0) {
+        var ruta = "/carrito/agregar/" + idProducto;
+        $("#resultBlock").load(ruta);
+    } else {
+        alert("No hay existencias...");
+    }
+}
+
+function  muestraImagen(input) {
+    if (input.files && input.files[0]) {
         var lector = new FileReader();
-       
-        lector.onload = function (e){
-         $('#blah').attr('src',e.target.result).height(200);   
+
+        lector.onload = function (e) {
+            $('#blah').attr('src', e.target.result).height(200);
         };
         lector.readAsDataURL(input.files[0]);
     }
@@ -20,6 +31,6 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 //Para eliminar las ventanas Toast
-    setTimeout(() => {
-        document.querySelectorAll('.toast').forEach(t => t.classList.remove('show'));
-    }, 3000);
+setTimeout(() => {
+    document.querySelectorAll('.toast').forEach(t => t.classList.remove('show'));
+}, 3000);

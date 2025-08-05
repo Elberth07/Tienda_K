@@ -1,7 +1,9 @@
 package com.tienda.service;
 
 import com.tienda.domain.Categoria;
+import com.tienda.domain.Item;
 import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,27 +15,68 @@ public class ItemService {
     @Autowired
     private HttpSession session;
 
-    public List<Categoria> getItems() {
-        var lista = (List) session.getAttribute("listaItems");
+    public List<Item> getItems() {
+        @SuppressWarnings("unchecked")
+        List<Item> lista = (List) session.getAttribute("listaItems");
         return lista;
     }
 
-    @Transactional(readOnly = true)
-    public Categoria getCategoria(Categoria Categoria) {
-        return categoriaRepository.findById(Categoria.getIdCategoria()).orElse(null);
-    }
-
-    @Transactional
-    public void save(Categoria categoria) {
-        categoriaRepository.save(categoria);
-    }
-
-    @Transactional
-    public boolean delete(Categoria categoria) {
-        try {
-            categoriaRepository.delete(categoria);
-        } catch (Exception e) {
+    public Item geItem(Item item) {
+        @SuppressWarnings("unchecked")
+        List<Item> lista = (List) session.getAttribute("listaItems");
+        if (lista != null) {
+            for (Item i : lista) {
+                if (item.getIdProducto() == i.getIdProducto()) {
+                    return i;
+                }
+            }
         }
-        return false;
+        return null;
+    }
+
+    public void save(Item item) {
+
+        @SuppressWarnings("unchecked")
+        List<Item> lista = (List) session.getAttribute("listaItems");
+        if (lista == null) {
+            lista = new ArrayList<>();
+
+        }
+        var existe = false;
+        for (Item i : lista) {
+            if (item.getIdProducto() == i.getIdProducto()) {
+                existe = true;
+                if (i.getCantidad() < i.getExistencias()) {
+                    i.setCantidad(i.getCantidad() + 1);
+                }
+                break;
+            }
+        }
+        if (!existe) {
+            item.setCantidad(1);
+            lista.add(item);
+        }
+        session.setAttribute("listaItem", lista);
+    }
+
+    public void delete(Item item) {
+        @SuppressWarnings("unchecked")
+        List<Item> lista = (List) session.getAttribute("listaItems");
+        if (lista != null) {
+            var posicion = 1;
+            var existe = false;
+            for (Item i : lista) {
+                posicion++;
+                if (item.getIdProducto() == i.getIdProducto()) {
+                    existe = true;
+                    break;
+                }
+            }
+            if (existe) {
+                lista.remove(posicion);
+                session.setAttribute("listaItem", lista);
+            }
+        }
+
     }
 }
