@@ -31,44 +31,57 @@ public class CarritoController {
         var lista = itemService.getItems();
 
         model.addAttribute("items", lista);
-        model.addAttribute("carritoTotal", lista.size());
+        model.addAttribute("carritoTotal", itemService.getTotal());
 
         return "/categoria/listado";
     }
 
     @PostMapping("/carrito/guardar")
     public String guardar(Item item) {
-
+itemService.update(item);
+        
         return "redirect:/carrito/listado";
 
     }
 
-    @PostMapping("/carrito/eliminar/idProducto")
+    @GetMapping("/carrito/eliminar/idProducto")
     public String eliminar(Item item) {
-
+itemService.delete(item);
         return "redirect:/carrito/listado";
 
     }
 
-    @PostMapping("/carrito/modificar/{idProducto}")
-    public String modificar(Item item) {
+    @GetMapping("/carrito/modificar/{idProducto}")
+    public String modificar(Item item, Model model) {
+        item= itemService.getItem(item);
+        model.addAttribute("item",item);
 
         return "/carrito/modifica";
 
     }
 
     @GetMapping("/carrito/agregar/{idProducto}")
-    public ModelAndView agregar(Item item) {
-        Item item2 = itemService.geItem(item);
+    public ModelAndView agregar(Item item, Model model) {
+        Item item2 = itemService.getItem(item);
         if (item2 == null){
         Producto producto = productoService.getProducto(item);
         item2 = new Item(producto);           
         }
         itemService.save(item2);
- 
+    var lista = itemService.getItems();
+        model.addAttribute("listaItems", lista);
+        model.addAttribute("listaTotal", lista.size());
+        model.addAttribute("carritoTotal",itemService.getTotal() );
 
-        return "/carrito/agregar";
+
+        return new ModelAndView("/carrito/fragmentos :: verCarritos");
 
     }
 
+    @GetMapping("/facturar/carrito")
+    public String facturar(){
+        itemService.facturar();
+        return "redirect:/";
+    }
+    
 }

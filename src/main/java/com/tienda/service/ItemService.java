@@ -1,13 +1,15 @@
 package com.tienda.service;
 
-import com.tienda.domain.Categoria;
-import com.tienda.domain.Item;
+import com.tienda.domain.*;
+import com.tienda.repository.*;
 import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ItemService {
@@ -17,16 +19,16 @@ public class ItemService {
 
     public List<Item> getItems() {
         @SuppressWarnings("unchecked")
-        List<Item> lista = (List) session.getAttribute("listaItems");
-        return lista;
+        List<Item> listaItems = (List) session.getAttribute("listaItems");
+        return listaItems;
     }
 
-    public Item geItem(Item item) {
+    public Item getItem(Item item) {
         @SuppressWarnings("unchecked")
-        List<Item> lista = (List) session.getAttribute("listaItems");
-        if (lista != null) {
-            for (Item i : lista) {
-                if (item.getIdProducto() == i.getIdProducto()) {
+        List<Item> listaItems = (List) session.getAttribute("listaItems");
+        if (listaItems != null) {
+            for (Item i : listaItems) {
+                if (Objects.equals(i.getIdProducto(), item.getIdProducto())) {
                     return i;
                 }
             }
@@ -34,17 +36,35 @@ public class ItemService {
         return null;
     }
 
-    public void save(Item item) {
-
+    public void delete(Item item) {
         @SuppressWarnings("unchecked")
-        List<Item> lista = (List) session.getAttribute("listaItems");
-        if (lista == null) {
-            lista = new ArrayList<>();
+        List<Item> listaItems = (List) session.getAttribute("listaItems");
+        if (listaItems != null) {
+            var posicion = -1;
+            var existe = false;
+            for (var i : listaItems) {
+                posicion++;
+                if (Objects.equals(i.getIdProducto(), item.getIdProducto())) {
+                    existe = true;
+                    break;
+                }
+            }
+            if (existe) {
+                listaItems.remove(posicion);
+                session.setAttribute("listaItems", listaItems);
+            }
+        }
+    }
 
+    public void save(Item item) {
+        @SuppressWarnings("unchecked")
+        List<Item> listaItems = (List) session.getAttribute("listaItems");
+        if (listaItems == null) {
+            listaItems = new ArrayList<>();
         }
         var existe = false;
-        for (Item i : lista) {
-            if (item.getIdProducto() == i.getIdProducto()) {
+        for (Item i : listaItems) {
+            if (Objects.equals(i.getIdProducto(), item.getIdProducto())) {
                 existe = true;
                 if (i.getCantidad() < i.getExistencias()) {
                     i.setCantidad(i.getCantidad() + 1);
@@ -54,29 +74,103 @@ public class ItemService {
         }
         if (!existe) {
             item.setCantidad(1);
-            lista.add(item);
+            listaItems.add(item);
         }
-        session.setAttribute("listaItem", lista);
+        session.setAttribute("listaItems", listaItems);
     }
-
-    public void delete(Item item) {
+    
+    public void update(Item item) {
         @SuppressWarnings("unchecked")
-        List<Item> lista = (List) session.getAttribute("listaItems");
-        if (lista != null) {
-            var posicion = 1;
-            var existe = false;
-            for (Item i : lista) {
-                posicion++;
-                if (item.getIdProducto() == i.getIdProducto()) {
-                    existe = true;
+        List<Item> listaItems = (List) session.getAttribute("listaItems");
+        if (listaItems != null) {
+            for (var i : listaItems) {
+                if (Objects.equals(i.getIdProducto(), item.getIdProducto())) {
+                    i.setCantidad(item.getCantidad());
+                    session.setAttribute("listaItems", listaItems);
                     break;
                 }
             }
-            if (existe) {
-                lista.remove(posicion);
-                session.setAttribute("listaItem", lista);
+        }
+    }
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+    @Autowired
+    private ProductoRepository productoRepository;
+    @Autowired
+    private FacturaRepository facturaRepository;
+    @Autowired
+    private VentaRepository ventaRepository;
+    
+    public void facturar() {
+        //Se debe recuperar el usuario autenticado y obtener su idUsuario
+        String username = "";
+        var principal = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        if (principal instanceof UserDetails userDetails) {
+            username = userDetails.getUsername();
+        } else {
+            if (principal != null) {
+                username = principal.toString();
             }
         }
 
+        if (username.isBlank()) {
+            System.out.println("username en blanco...");
+            return;
+        }
+
+        Usuario usuario = usuarioRepository.findByUsername(username);
+        if (usuario == null) {
+            System.out.println("Usuario no existe en usuarios...");
+            return;
+        }
+
+        //Se debe registrar la factura incluyendo el usuario
+        Factura factura = new Factura(usuario.getIdUsuario());
+        factura = facturaRepository.save(factura);
+
+        //Se debe registrar las ventas de cada producto -actualizando existencias-
+        @SuppressWarnings("unchecked")
+        List<Item> listaItems = (List) session.getAttribute("listaItems");
+        if (listaItems != null) {
+            double total = 0;
+            for (Item i : listaItems) {
+                var producto = productoRepository.getReferenceById(i.getIdProducto());
+                if (producto.getExistencias() >= i.getCantidad()) {
+                    Venta venta = new Venta(factura.getIdFactura(),
+                            i.getIdProducto(),
+                            i.getPrecio(),
+                            i.getCantidad());
+                    ventaRepository.save(venta);
+                    producto.setExistencias(producto.getExistencias() - i.getCantidad());
+                    productoRepository.save(producto);
+                    total += i.getCantidad() * i.getPrecio();
+                }
+            }
+
+            //Se debe registrar el total de la venta en la factura
+            factura.setTotal(total);
+            facturaRepository.save(factura);
+
+            //Se debe limpiar el carrito la lista...
+            listaItems.clear();
+        }
+    }
+    
+    public double getTotal() {
+        //Se debe registrar las ventas de cada producto -actualizando existencias-
+        @SuppressWarnings("unchecked")
+        var listaItems = (List<Item>) session.getAttribute("listaItems");
+        double total = 0;
+        if (listaItems != null) {
+            for (Item i : listaItems) {
+                total += i.getCantidad() * i.getPrecio();
+            }
+        }
+        return total;
     }
 }
